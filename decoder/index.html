@@ -2,20 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="https://akainth.me/images/light64.png">
     <title>WebSocket Decoder</title>
+
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+        }
+
+        form > input {
+            flex-grow: 1;
+        }
+
+        form * {
+            margin: 8px;
+        }
+
+        #output {
+            display: flex;
+            padding: 8px;
+        }
+
+        #output > p {
+            flex-grow: 1;
+        }
+
+        #output > button {
+            float: right;
+        }
+
+        #everything {
+            margin: auto;
+            max-width: 800px;
+        }
+    </style>
 </head>
 <body>
-<h1>WebSocket Decoder</h1>
-<canvas id="socket-data-chart"></canvas>
-<p id="message-output"></p>
-<button id="retransmit">Retransmit</button>
-<fieldset>
-    <form id="ws-connect-form">
-        <input type="url" name="ws-url">
-        <button type="submit">Connect</button>
-    </form>
-</fieldset>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js" integrity="sha256-Y26AMvaIfrZ1EQU49pf6H4QzVTrOI8m9wQYKkftBt4s=" crossorigin="anonymous"></script>
+<div id="everything">
+    <h1>WebSocket Decoder</h1>
+    <fieldset>
+        <legend>Connect to a WS server</legend>
+        <form id="ws-connect-form">
+            <input placeholder="ws://localhost:8081" type="url" name="ws-url">
+            <button type="submit">Connect</button>
+        </form>
+    </fieldset>
+    <div id="chart-container" style="position: relative; height: 100px; margin: 8px">
+        <canvas id="socket-data-chart"></canvas>
+    </div>
+    <div id="output">
+        <p id="raw-data">0101010101</p>
+        <p id="message-output">The text will be decoded here</p>
+        <button id="retransmit">Retransmit</button>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"
+        integrity="sha256-Y26AMvaIfrZ1EQU49pf6H4QzVTrOI8m9wQYKkftBt4s=" crossorigin="anonymous"></script>
 <script>
     let ws;
 
@@ -28,6 +78,7 @@
             }]
         },
         options: {
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     display: false,
@@ -40,6 +91,7 @@
                 xAxis: {
                     grid: {
                         display: false,
+                        drawBorder: false,
                     },
                     ticks: {
                         display: false
@@ -49,6 +101,7 @@
                     beginAtZero: true,
                     grid: {
                         display: false,
+                        drawBorder: false
                     },
                     ticks: {
                         display: false
@@ -58,6 +111,7 @@
         }
     });
 
+    const rawData = document.querySelector("#raw-data");
     const messageOutput = document.querySelector("#message-output");
     let messageEncoded = [];
 
@@ -88,9 +142,11 @@
 
             chart.data.labels.push(Date.now());
             chart.data.datasets[0].data.push(data);
-            chart.update();
+            chart.update('none');
 
             const charsComplete = Math.floor(messageEncoded.length / 16); // UTF-16 chars
+
+            rawData.textContent = messageEncoded.slice(-16).join("").slice(-16);
 
             let message = "";
             for (let i = 0; i < charsComplete; i++) {

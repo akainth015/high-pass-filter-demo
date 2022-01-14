@@ -45,3 +45,8 @@ PORT=1077 node denoiser/index.mjs
 You should see the same signal if you connect to it from the webpage.
 Edit `denoiser/index.mjs` to try and fix that! The final output from your
 filter should be a `0` or a `1`. Good luck!
+
+Tip: depending on how you scope your variables, the filter can retain what it has
+"learned" about the noise when you press the "retransmit" button. That means if your
+filter starts working properly halfway through the broadcast, you can just press
+"retransmit" and you should be able to decode the full message.
