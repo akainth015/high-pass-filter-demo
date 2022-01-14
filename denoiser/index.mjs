@@ -12,12 +12,13 @@ wss.on('connection', async function connection(ws) {
         sourceConnection.send("retransmit pls tysm -denoiser");
     });
 
+    const alpha = 0.18;
+    let backgroundNoise = 0;
+
     sourceConnection.on("message", message => {
         const signal = parseFloat(message);
 
-        /* TODO Replace this section with an algorithm to detect the spikes / filter out the noise! */
-        const corrected = signal > 50 ? 1 : 0;
-
-        ws.send(corrected.toString());
+        ws.send((signal - backgroundNoise > 0 ? 1 : 0).toString());
+        backgroundNoise = backgroundNoise * (1 - alpha) + signal * alpha;
     });
 });
