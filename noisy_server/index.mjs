@@ -1,7 +1,10 @@
 import {WebSocketServer} from 'ws';
 import {MessageTransmission} from "./protocol.mjs";
 
-const wss = new WebSocketServer({port: 8080});
+let port = process.env.PORT || 8080;
+const wss = new WebSocketServer({port: port});
+
+console.info(`Started a server on port ${port}. ws://localhost:${port}`);
 
 wss.on('connection', async function connection(ws) {
     const message = new MessageTransmission("https://youtu.be/dQw4w9WgXcQ", 100);
@@ -10,7 +13,6 @@ wss.on('connection', async function connection(ws) {
         message.retransmit();
     });
 
-    // TODO add a 1s noise calibration leader
     const interference = 0.02;
 
     setInterval(() => {

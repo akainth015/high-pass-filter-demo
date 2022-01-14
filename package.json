@@ -2,7 +2,7 @@
   "name": "noisy_server",
   "version": "1.0.0",
   "scripts": {
-    "start": "node noisy_server/src/index.mjs"
+    "start": "node noisy_server/index.mjs"
   },
   "dependencies": {
     "ws": "^8.4.1"
