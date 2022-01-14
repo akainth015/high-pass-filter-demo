@@ -1,0 +1,17 @@
+{
+  "name": "noisy_server",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node noisy_server/src/index.mjs"
+  },
+  "dependencies": {
+    "ws": "^8.4.1"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.6",
+    "utf-8-validate": "^5.0.8"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.2.2"
+  }
+}

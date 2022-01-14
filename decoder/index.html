@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Decoder</title>
+</head>
+<body>
+<h1>WebSocket Decoder</h1>
+<canvas id="socket-data-chart"></canvas>
+<p id="message-output"></p>
+<button id="retransmit">Retransmit</button>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js" integrity="sha256-Y26AMvaIfrZ1EQU49pf6H4QzVTrOI8m9wQYKkftBt4s=" crossorigin="anonymous"></script>
+<script>
+    const ws = new WebSocket("ws://localhost:8081");
+
+    const chart = new Chart("socket-data-chart", {
+        type: 'bar',
+        data: {
+            datasets: [{
+                label: "Signal",
+                data: []
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                tooltip: {
+                    // enabled: false,
+                }
+            },
+            scales: {
+                xAxis: {
+                    grid: {
+                        display: false,
+                    },
+                    ticks: {
+                        display: false
+                    },
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        display: false,
+                    },
+                    ticks: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    const messageOutput = document.querySelector("#message-output");
+    let messageEncoded = [];
+
+    document.querySelector("#retransmit").onclick = ev => {
+        messageEncoded = [];
+        chart.data.labels = [];
+        chart.data.datasets[0].data = [];
+        chart.update();
+        ws.send("retransmit pls thanku");
+    }
+
+    ws.onmessage = ev => {
+        const data = Math.round(ev.data);
+        messageEncoded.push(data);
+
+        chart.data.labels.push(Date.now());
+        chart.data.datasets[0].data.push(data);
+        chart.update();
+
+        const charsComplete = Math.floor(messageEncoded.length / 16); // UTF-16 chars
+
+        let message = "";
+        for (let i = 0; i < charsComplete; i++) {
+            message += String.fromCharCode(parseInt(messageEncoded.slice(i * 16, (i + 1) * 16).join(""), 2));
+        }
+
+        messageOutput.textContent = message;
+    }
+</script>
+</body>
+</html>
