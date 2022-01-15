@@ -12,13 +12,13 @@ wss.on('connection', async function connection(ws) {
         sourceConnection.send("retransmit pls tysm -denoiser");
     });
 
-    const alpha = 0.18;
+    const alpha = 0.01;
     let backgroundNoise = 0;
 
     sourceConnection.on("message", message => {
         const signal = parseFloat(message);
 
-        ws.send((signal - backgroundNoise > 0 ? 1 : 0).toString());
+        ws.send((signal - backgroundNoise > 1 ? 1 : 0).toString());
         backgroundNoise = backgroundNoise * (1 - alpha) + signal * alpha;
     });
 });

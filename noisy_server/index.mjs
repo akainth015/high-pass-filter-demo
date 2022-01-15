@@ -13,7 +13,7 @@ wss.on('connection', async function connection(ws) {
         message.retransmit();
     });
 
-    const interference = 0.02;
+    const interference = 0.14;
 
     setInterval(() => {
         if (!message.transmissionOver()) {
